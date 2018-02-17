@@ -21,7 +21,7 @@ Chrono will auto-init once the first update is ran. You must include
 chrono.update(dt)
 ```
 
-within the script including Chrono.
+within the script including Chrono to keep its time up to date.
 
 Once Chrono has connected with a server it will allow you to get the current time with
 
