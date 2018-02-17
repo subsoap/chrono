@@ -10,8 +10,8 @@ function final(self)
 end
 
 function update(self, dt)
-	-- Add update code here
-	-- Remove this function if not needed
+	chrono.update(dt)
+	gui.set_text(gui.get_node("time"), "Timestamp: " .. tostring(chrono.get_time()))
 end
 
 function on_message(self, message_id, message, sender)
