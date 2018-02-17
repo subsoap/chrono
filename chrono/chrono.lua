@@ -21,6 +21,28 @@ M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
 M.initialized = false
 
+local function sync_http()
+	http.request("https://www.timestampnow.com/", "GET", http_result)
+end
+
+local function sync_ntp()
+	if not pcall(M.ntp.update_time) then
+		print("Chrono: Warning cannot sync with NTP servers")
+		M.disconnected = true
+		return false
+	else
+		M.time_now = M.ntp.time_now + M.time_offset
+		if M.verbose then print("Chrono: Time synced - " .. tostring(M.time_now)) end
+		M.disconnected = false
+		if M.retry_counter > 0 then
+			print("Chrono: NTP servers have successfully synced after a disconnect")
+		end
+		M.retry_counter = 0
+		M.retry_attempts = 0
+		return true
+	end
+end
+
 function M.init()
 	M.sync_time()
 	M.initialized = true
@@ -28,9 +50,9 @@ end
 
 function M.sync_time()
 	if M.sysinfo.system_name ~= "HTML5" then
-		M.sync_ntp()
+		sync_ntp()
 	else
-		M.sync_http()
+		sync_http()
 	end	
 end
 
@@ -50,9 +72,7 @@ local function http_result(self, _, response)
     end
 end
 
-function M.sync_http()
-	http.request("https://www.timestampnow.com/", "GET", http_result)
-end
+
 
 function M.difference_from_now(seconds)
 	return seconds - M.time_now
@@ -88,23 +108,6 @@ function M.format_time(total_seconds)
 	end
 end
 
-function M.sync_ntp()
-	if not pcall(M.ntp.update_time) then
-		print("Chrono: Warning cannot sync with NTP servers")
-		M.disconnected = true
-		return false
-	else
-		M.time_now = M.ntp.time_now + M.time_offset
-		if M.verbose then print("Chrono: Time synced - " .. tostring(M.time_now)) end
-		M.disconnected = false
-		if M.retry_counter > 0 then
-			print("Chrono: NTP servers have successfully synced after a disconnect")
-		end
-		M.retry_counter = 0
-		M.retry_attempts = 0
-		return true
-	end
-end
 
 function M.update(dt)
 
