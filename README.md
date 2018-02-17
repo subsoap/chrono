@@ -12,6 +12,7 @@ Once added, you must require the main Lua module in scripts via
 
 ```
 local chrono = require("chrono.chrono")
+```
 
 ## Usage
 Chrono will auto-init once the first update is ran. You must include
