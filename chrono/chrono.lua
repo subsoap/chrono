@@ -19,10 +19,11 @@ M.retry_timer = 0.5 -- total time in seconds between disconnected retry attemps
 M.retry_attempts = 0 -- current counter value of number of retry attempts
 M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
-
+M.initialized = false
 
 function M.init()
 	M.sync_time()
+	M.initialized = true
 end
 
 function M.sync_time()
@@ -107,6 +108,10 @@ end
 
 function M.update(dt)
 
+	if M.initialized == false then
+		M.init()
+	end
+
 	if M.disconnected == false then
 		M.time_now = M.time_now + dt
 	end
@@ -127,6 +132,6 @@ function M.update(dt)
 	end
 end
 
-M.init()
+
 
 return M
