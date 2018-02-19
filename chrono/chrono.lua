@@ -21,6 +21,18 @@ M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
 M.initialized = false
 
+local function http_result(self, _, response)
+	if response.status == 200 then
+		M.time_now = response.response
+		print(response.response)
+		M.disconnected = false
+		M.retry_counter = 0
+		M.retry_attempts = 0    	
+	else
+		M.disconnected = true
+	end
+end
+
 local function round(x)
 	local a = x % 1
 	x = x - a
@@ -69,18 +81,6 @@ function M.get_time()
 		M.init()
 	end	
 	return M.time_now
-end
-
-local function http_result(self, _, response)
-	if response.status == 200 then
-    	M.time_now = response.response
-    	print(response.response)
-    	M.disconnected = false
-		M.retry_counter = 0
-		M.retry_attempts = 0    	
-    else
-    	M.disconnected = true
-    end
 end
 
 
