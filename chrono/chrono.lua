@@ -21,6 +21,14 @@ M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
 M.initialized = false
 
+local function round(x)
+	local a = x % 1
+	x = x - a
+	if a < 0.5 then a = 0
+	else a = 1 end
+	return x + a
+end
+
 local function sync_http()
 	http.request("https://www.timestampnow.com/", "GET", http_result)
 end
@@ -57,6 +65,9 @@ function M.sync_time()
 end
 
 function M.get_time()
+	if M.initialized == false then
+		M.init()
+	end	
 	return M.time_now
 end
 
