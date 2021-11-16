@@ -23,7 +23,26 @@ chrono.update(dt)
 
 within the script including Chrono to keep its time up to date.
 
-Once Chrono has connected with a server it will allow you to get the current time with
+Once Chrono has connected with a server it will allow you to get the current time with.
+
+Note that the builtin dt can sometimes be unreliable currently do to possible vsync issues so you should use socket.gettime() to build your own dt. An example of this is included in the example script. A short example is also included below.
+
+```
+function init(self)
+	self.last_time = socket.gettime()
+end
+
+function update(self, dt)
+	local dt_actual = socket.gettime() - self.last_time
+	self.last_time = socket.gettime()
+	chrono.update(dt_actual)
+end
+```
+
+You may want to keep the total time updated in your main.script and then allow other scripts to reference chrono to get the time.
+
+Using ```chrono.update(dt)``` ever can still be a liability if the user is able to change their system time while using socket.gettime() / their system has vsync issues and goes too fast. So if you really want to ensure time is respected you will want to sync time and then get time after every important time based action (while displayed timers could still be based on the dt generated versions). This way you can display a somewhat relaible timer, but still have actions require direct updates to remote time differences.
+
 
 ```
 chrono.get_time()
@@ -34,5 +53,7 @@ Chrono will not constantly connect to time servers, but use the dt passed to it 
 ```
 chrono.sync_time()
 ```
+
+Do not constantly sync time with a remote server. Only sync when absolutely necessary such as before allowing time based actions (daily resets / energy regeneration).
 
 Defold has built in ability to check if Window has gained focus. There is also DefWindow if you need multiple window callbacks.

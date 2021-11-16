@@ -10,6 +10,7 @@ end
 function init(self)
 	msg.post("@render:", "clear_color", { color = vmath.vector4(0, 99/255, 169/255, 1) } )
 	window.set_listener(window_callback)
+	self.last_time = socket.gettime()
 end
 
 function final(self)
@@ -18,7 +19,9 @@ function final(self)
 end
 
 function update(self, dt)
-	chrono.update(dt)
+	local dt_actual = socket.gettime() - self.last_time
+	self.last_time = socket.gettime()
+	chrono.update(dt_actual)
 	gui.set_text(gui.get_node("time"), "Timestamp: " .. tostring(chrono.get_time()))
 end
 

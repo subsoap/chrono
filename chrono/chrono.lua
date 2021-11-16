@@ -2,7 +2,7 @@ local M = {}
 
 M.ntp = require("chrono.ntp")
 
-M.time_now = 0 -- the current time, check if defos.isconnected is true to trust this or not
+M.time_now = 0 -- the current time, check if chrono.isconnected is true to trust this or not
 M.time_offset = 0 -- a time offset option which is applied to time_now whenever syncing happens - mostly only useful to control timezone offset for midnight/noon
 
 M.use_ntp = true
