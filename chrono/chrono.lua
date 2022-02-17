@@ -2,7 +2,7 @@ local M = {}
 
 M.ntp = require("chrono.ntp")
 
-M.time_now = 0 -- the current time, check if chrono.isconnected is true to trust this or not
+M.time_now = 0 -- the current time, check if chrono.disconnected is false to trust this or not
 M.time_offset = 0 -- a time offset option which is applied to time_now whenever syncing happens - mostly only useful to control timezone offset for midnight/noon
 
 M.use_ntp = true
@@ -21,13 +21,16 @@ M.retry_attempts_max = -1 -- maximum retry attempts allow (currently not used)
 M.verbose = true -- if true then successful connection events will be printed, if false only errors
 M.initialized = false
 
+M.on_sync_time = nil -- callback on time successfully synced
+
 local function http_result(self, _, response)
 	if response.status == 200 then
 		M.time_now = response.response
 		print(response.response)
 		M.disconnected = false
 		M.retry_counter = 0
-		M.retry_attempts = 0    	
+		M.retry_attempts = 0
+		if type(M.on_sync_time) == "function" then M.on_sync_time() end
 	else
 		M.disconnected = true
 	end
@@ -54,6 +57,7 @@ local function sync_ntp()
 		M.time_now = M.ntp.time_now + M.time_offset
 		if M.verbose then print("Chrono: Time synced - " .. tostring(M.time_now)) end
 		M.disconnected = false
+		if type(M.on_sync_time) == "function" then M.on_sync_time() end
 		if M.retry_counter > 0 then
 			print("Chrono: NTP servers have successfully synced after a disconnect")
 		end
@@ -63,9 +67,10 @@ local function sync_ntp()
 	end
 end
 
-function M.init()
-	M.sync_time()
+function M.init(on_sync_time)
+	if type(on_sync_time) == "function" then M.on_sync_time = on_sync_time end
 	M.initialized = true
+	M.sync_time()
 end
 
 function M.sync_time()
