@@ -54,6 +54,8 @@ Chrono will not constantly connect to time servers, but use the dt passed to it 
 chrono.sync_time()
 ```
 
+You can manually call the initialization of the ```chrono``` with the command ```chrono.init(mt_callback)``` so that the callback is called as soon as the module receives the current time.
+
 Do not constantly sync time with a remote server. Only sync when absolutely necessary such as before allowing time based actions (daily resets / energy regeneration).
 
 Defold has built in ability to check if Window has gained focus. There is also DefWindow if you need multiple window callbacks.
